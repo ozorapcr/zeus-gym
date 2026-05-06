@@ -1,0 +1,223 @@
+[
+  {
+    "id": 1,
+    "name": "Website Development",
+    "description": "Pembuatan website profesional",
+    "category": "IT",
+    "price": 5000000,
+    "image": "https://picsum.photos/300?1",
+    "details": { "provider": "TechSolution", "location": "Jakarta", "rating": 4.8 },
+    "features": { "support": true, "maintenance": true, "seo": true },
+    "tags": ["Website", "Frontend", "Backend"]
+  },
+  {
+    "id": 2,
+    "name": "Mobile App Development",
+    "description": "Aplikasi Android & iOS",
+    "category": "IT",
+    "price": 8000000,
+    "image": "https://picsum.photos/300?2",
+    "details": { "provider": "AppStudio", "location": "Bandung", "rating": 4.7 },
+    "features": { "support": true, "maintenance": true, "seo": false },
+    "tags": ["Mobile", "Flutter"]
+  },
+  {
+    "id": 3,
+    "name": "UI/UX Design",
+    "description": "Desain modern aplikasi",
+    "category": "Design",
+    "price": 3000000,
+    "image": "https://picsum.photos/300?3",
+    "details": { "provider": "CreativeID", "location": "Surabaya", "rating": 4.6 },
+    "features": { "support": false, "maintenance": false, "seo": false },
+    "tags": ["UI", "UX"]
+  },
+  {
+    "id": 4,
+    "name": "SEO Optimization",
+    "description": "Optimasi Google ranking",
+    "category": "Marketing",
+    "price": 2000000,
+    "image": "https://picsum.photos/300?4",
+    "details": { "provider": "SEOPro", "location": "Medan", "rating": 4.5 },
+    "features": { "support": true, "maintenance": true, "seo": true },
+    "tags": ["SEO", "Google"]
+  },
+  {
+    "id": 5,
+    "name": "Content Writing",
+    "description": "Artikel SEO berkualitas",
+    "category": "Marketing",
+    "price": 1000000,
+    "image": "https://picsum.photos/300?5",
+    "details": { "provider": "WritePro", "location": "Bali", "rating": 4.4 },
+    "features": { "support": true, "maintenance": false, "seo": true },
+    "tags": ["Content"]
+  },
+  {
+    "id": 6,
+    "name": "Graphic Design",
+    "description": "Desain logo & branding",
+    "category": "Design",
+    "price": 1500000,
+    "image": "https://picsum.photos/300?6",
+    "details": { "provider": "DesignID", "location": "Jogja", "rating": 4.6 },
+    "features": { "support": false, "maintenance": false, "seo": false },
+    "tags": ["Logo"]
+  },
+  {
+    "id": 7,
+    "name": "Social Media Management",
+    "description": "Kelola Instagram & TikTok",
+    "category": "Marketing",
+    "price": 2500000,
+    "image": "https://picsum.photos/300?7",
+    "details": { "provider": "SocialBoost", "location": "Jakarta", "rating": 4.7 },
+    "features": { "support": true, "maintenance": true, "seo": false },
+    "tags": ["Instagram"]
+  },
+  {
+    "id": 8,
+    "name": "Video Editing",
+    "description": "Editing video profesional",
+    "category": "Media",
+    "price": 2000000,
+    "image": "https://picsum.photos/300?8",
+    "details": { "provider": "VideoPro", "location": "Bandung", "rating": 4.5 },
+    "features": { "support": true, "maintenance": false, "seo": false },
+    "tags": ["Video"]
+  },
+  {
+    "id": 9,
+    "name": "Photography",
+    "description": "Jasa foto event",
+    "category": "Media",
+    "price": 3000000,
+    "image": "https://picsum.photos/300?9",
+    "details": { "provider": "PhotoID", "location": "Bali", "rating": 4.8 },
+    "features": { "support": false, "maintenance": false, "seo": false },
+    "tags": ["Photo"]
+  },
+  {
+    "id": 10,
+    "name": "Cloud Hosting",
+    "description": "Hosting cepat & aman",
+    "category": "IT",
+    "price": 1200000,
+    "image": "https://picsum.photos/300?10",
+    "details": { "provider": "CloudNet", "location": "Singapore", "rating": 4.9 },
+    "features": { "support": true, "maintenance": true, "seo": false },
+    "tags": ["Cloud"]
+  },
+
+  {
+    "id": 11,
+    "name": "Copywriting",
+    "description": "Tulisan promosi",
+    "category": "Marketing",
+    "price": 900000,
+    "image": "https://picsum.photos/300?11",
+    "details": { "provider": "CopyPro", "location": "Jakarta", "rating": 4.3 },
+    "features": { "support": true, "maintenance": false, "seo": true },
+    "tags": ["Copy"]
+  },
+  {
+    "id": 12,
+    "name": "Branding Strategy",
+    "description": "Strategi branding bisnis",
+    "category": "Marketing",
+    "price": 4000000,
+    "image": "https://picsum.photos/300?12",
+    "details": { "provider": "BrandID", "location": "Bandung", "rating": 4.6 },
+    "features": { "support": true, "maintenance": false, "seo": false },
+    "tags": ["Brand"]
+  },
+  {
+    "id": 13,
+    "name": "Animation",
+    "description": "Animasi 2D/3D",
+    "category": "Media",
+    "price": 3500000,
+    "image": "https://picsum.photos/300?13",
+    "details": { "provider": "AnimPro", "location": "Surabaya", "rating": 4.7 },
+    "features": { "support": true, "maintenance": false, "seo": false },
+    "tags": ["Animasi"]
+  },
+  {
+    "id": 14,
+    "name": "Data Analysis",
+    "description": "Analisis data bisnis",
+    "category": "IT",
+    "price": 4500000,
+    "image": "https://picsum.photos/300?14",
+    "details": { "provider": "DataPro", "location": "Jakarta", "rating": 4.8 },
+    "features": { "support": true, "maintenance": true, "seo": false },
+    "tags": ["Data"]
+  },
+  {
+    "id": 15,
+    "name": "Cyber Security",
+    "description": "Keamanan sistem",
+    "category": "IT",
+    "price": 6000000,
+    "image": "https://picsum.photos/300?15",
+    "details": { "provider": "SecureID", "location": "Singapore", "rating": 4.9 },
+    "features": { "support": true, "maintenance": true, "seo": false },
+    "tags": ["Security"]
+  },
+  {
+    "id": 16,
+    "name": "Email Marketing",
+    "description": "Promosi via email",
+    "category": "Marketing",
+    "price": 1800000,
+    "image": "https://picsum.photos/300?16",
+    "details": { "provider": "MailPro", "location": "Jakarta", "rating": 4.4 },
+    "features": { "support": true, "maintenance": false, "seo": false },
+    "tags": ["Email"]
+  },
+  {
+    "id": 17,
+    "name": "Podcast Editing",
+    "description": "Edit audio podcast",
+    "category": "Media",
+    "price": 1500000,
+    "image": "https://picsum.photos/300?17",
+    "details": { "provider": "AudioPro", "location": "Bandung", "rating": 4.5 },
+    "features": { "support": false, "maintenance": false, "seo": false },
+    "tags": ["Audio"]
+  },
+  {
+    "id": 18,
+    "name": "Game Development",
+    "description": "Pembuatan game",
+    "category": "IT",
+    "price": 9000000,
+    "image": "https://picsum.photos/300?18",
+    "details": { "provider": "GameStudio", "location": "Jakarta", "rating": 4.7 },
+    "features": { "support": true, "maintenance": true, "seo": false },
+    "tags": ["Game"]
+  },
+  {
+    "id": 19,
+    "name": "Illustration",
+    "description": "Jasa ilustrasi digital",
+    "category": "Design",
+    "price": 2000000,
+    "image": "https://picsum.photos/300?19",
+    "details": { "provider": "ArtID", "location": "Bali", "rating": 4.6 },
+    "features": { "support": false, "maintenance": false, "seo": false },
+    "tags": ["Art"]
+  },
+  {
+    "id": 20,
+    "name": "Voice Over",
+    "description": "Pengisi suara profesional",
+    "category": "Media",
+    "price": 1700000,
+    "image": "https://picsum.photos/300?20",
+    "details": { "provider": "VoicePro", "location": "Jakarta", "rating": 4.5 },
+    "features": { "support": false, "maintenance": false, "seo": false },
+    "tags": ["Voice"]
+  }
+]
