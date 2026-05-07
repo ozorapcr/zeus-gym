@@ -24,7 +24,7 @@ const PAGES = {
 };
 
 function LoginScreen({ onLogin }) {
-  const [form, setForm] = useState({ email: "admin@gympro.local", password: "admin123" });
+  const [form, setForm] = useState({ email: "admin@gymzeus.local", password: "admin123" });
   const [error, setError] = useState("");
 
   const submit = (event) => {
@@ -43,7 +43,7 @@ function LoginScreen({ onLogin }) {
         <div className="brand-lockup">
           <div className="brand-mark">G</div>
           <div>
-            <div className="brand-title">GYM<span>PRO</span></div>
+            <div className="brand-title">GYM<span>ZEUS</span></div>
             <div className="brand-subtitle">MANAGEMENT SYSTEM</div>
           </div>
         </div>

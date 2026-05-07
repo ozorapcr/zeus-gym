@@ -4,9 +4,9 @@ export default function Sidebar({ active, setActive, session, onLogout }) {
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <div className="brand-mark">G</div>
+        <div className="brand-mark"></div>
         <div>
-          <div className="brand-title">GYM<span>PRO</span></div>
+          <div className="brand-title">GYM<span>ZEUS</span></div>
           <div className="brand-subtitle">MANAGEMENT</div>
         </div>
       </div>

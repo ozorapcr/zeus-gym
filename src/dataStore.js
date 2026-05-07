@@ -20,8 +20,8 @@ const seedDatabase = {
 };
 
 export const adminUser = {
-  name: "Admin GymPro",
-  email: "admin@gympro.local",
+  name: "Admin Gymzeus",
+  email: "admin@gymzeus.local",
   password: "admin123",
   role: "Administrator",
 };
