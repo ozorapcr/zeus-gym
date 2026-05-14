@@ -480,11 +480,15 @@ function MemberCard({ m, selected, onDetail, onRenew }) {
 export default function Keanggotaan({
   database,
   actions,
+  detailMemberId = "",
+  onOpenMemberDetail,
+  onCloseMemberDetail,
 }) {
   const [search, setSearch] = useState("");
-  const [selectedMemberId, setSelectedMemberId] = useState("");
+  const [localSelectedMemberId, setLocalSelectedMemberId] = useState(detailMemberId);
 
   const members = database.members;
+  const selectedMemberId = onOpenMemberDetail ? detailMemberId : localSelectedMemberId;
   const selectedMember = members.find((member) => member.id === selectedMemberId);
   const selectedTransactions = selectedMember
     ? database.transactions.filter(
@@ -496,6 +500,16 @@ export default function Keanggotaan({
   const selectedAccessLogs = selectedMember
     ? database.accessLogs.filter((log) => log.name === selectedMember.name)
     : [];
+
+  const openDetail = (memberId) => {
+    setLocalSelectedMemberId(memberId);
+    onOpenMemberDetail?.(memberId);
+  };
+
+  const closeDetail = () => {
+    setLocalSelectedMemberId("");
+    onCloseMemberDetail?.();
+  };
 
   /* ============================================================
      FILTER SEARCH
@@ -665,10 +679,7 @@ export default function Keanggotaan({
           }}
         />
       </div>
-
-      {/* ============================================================
-          MEMBER LIST
-      ============================================================ */}
+      {/* Add Detail Panel */}
       <div
         className="member-detail-layout"
         style={{
@@ -710,7 +721,7 @@ export default function Keanggotaan({
                 key={m.id}
                 m={m}
                 selected={selectedMemberId === m.id}
-                onDetail={setSelectedMemberId}
+                onDetail={openDetail}
                 onRenew={renewMember}
               />
             ))
@@ -722,7 +733,7 @@ export default function Keanggotaan({
             member={selectedMember}
             transactions={selectedTransactions}
             accessLogs={selectedAccessLogs}
-            onClose={() => setSelectedMemberId("")}
+            onClose={closeDetail}
             onRenew={renewMember}
           />
         </div>

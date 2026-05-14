@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { COLORS } from "./constants";
 import { getSession, loadDatabase, login, logout, saveDatabase } from "./dataStore";
 import Sidebar from "./components/Sidebar";
@@ -22,6 +22,29 @@ const PAGES = {
   Promosi,
   Feedback,
 };
+
+const CUSTOMER_DETAIL_ROUTE = /^\/customers\/([^/]+)\/?$/i;
+
+function readRoute() {
+  if (typeof window === "undefined") {
+    return { active: "Dashboard", memberId: "" };
+  }
+
+  const match = window.location.pathname.match(CUSTOMER_DETAIL_ROUTE);
+  if (match) {
+    return {
+      active: "Keanggotaan",
+      memberId: decodeURIComponent(match[1]).toUpperCase(),
+    };
+  }
+
+  return { active: "Dashboard", memberId: "" };
+}
+
+function pushPath(path) {
+  if (typeof window === "undefined" || window.location.pathname === path) return;
+  window.history.pushState(null, "", path);
+}
 
 function LoginScreen({ onLogin }) {
   const [form, setForm] = useState({ email: "admin@gymzeus.local", password: "admin123" });
@@ -80,11 +103,11 @@ function LoginScreen({ onLogin }) {
 }
 
 export default function App() {
-  const [active, setActive] = useState("Dashboard");
+  const [route, setRoute] = useState(() => readRoute());
   const [session, setSession] = useState(() => getSession());
   const [database, setDatabase] = useState(() => loadDatabase());
 
-  const PageComponent = PAGES[active];
+  const PageComponent = PAGES[route.active];
   const dbActions = useMemo(() => ({
     updateDatabase(updater) {
       setDatabase((current) => {
@@ -95,14 +118,36 @@ export default function App() {
     },
   }), []);
 
+  useEffect(() => {
+    const handlePopState = () => setRoute(readRoute());
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
   if (!session) {
     return <LoginScreen onLogin={setSession} />;
   }
 
+  const navigatePage = (page) => {
+    pushPath("/");
+    setRoute({ active: page, memberId: "" });
+  };
+
+  const openMemberDetail = (memberId) => {
+    const nextMemberId = String(memberId).toUpperCase();
+    pushPath(`/customers/${encodeURIComponent(nextMemberId)}`);
+    setRoute({ active: "Keanggotaan", memberId: nextMemberId });
+  };
+
+  const closeMemberDetail = () => {
+    pushPath("/");
+    setRoute({ active: "Keanggotaan", memberId: "" });
+  };
+
   const handleLogout = () => {
     logout();
     setSession(null);
-    setActive("Dashboard");
+    navigatePage("Dashboard");
   };
 
   return (
@@ -112,11 +157,17 @@ export default function App() {
       background: COLORS.black,
       color: COLORS.text,
     }}>
-      <Sidebar active={active} setActive={setActive} session={session} onLogout={handleLogout} />
+      <Sidebar active={route.active} setActive={navigatePage} session={session} onLogout={handleLogout} />
 
       <main className="app-main">
         <div className="page-container">
-          <PageComponent database={database} actions={dbActions} />
+          <PageComponent
+            database={database}
+            actions={dbActions}
+            detailMemberId={route.memberId}
+            onOpenMemberDetail={openMemberDetail}
+            onCloseMemberDetail={closeMemberDetail}
+          />
         </div>
       </main>
     </div>
