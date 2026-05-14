@@ -9,6 +9,8 @@ import { COLORS } from "../constants";
 import {
   PageHeader,
   Badge,
+  Card,
+  SectionTitle,
 } from "../components/UI";
 
 import { addMonths } from "../dataStore";
@@ -22,16 +24,294 @@ const STATUS_COLOR = {
   Kadaluarsa: "red",
 };
 
+function InfoItem({ label, value }) {
+  return (
+    <div
+      style={{
+        background: "#F7F8FA",
+        border: `1px solid ${COLORS.border}`,
+        borderRadius: 14,
+        padding: "14px 16px",
+      }}
+    >
+      <div
+        style={{
+          fontSize: 11,
+          fontWeight: 700,
+          color: COLORS.textSec,
+          marginBottom: 6,
+          textTransform: "uppercase",
+        }}
+      >
+        {label}
+      </div>
+      <div
+        style={{
+          fontSize: 14,
+          fontWeight: 700,
+          color: COLORS.text,
+          lineHeight: 1.5,
+        }}
+      >
+        {value || "-"}
+      </div>
+    </div>
+  );
+}
+
+function MemberDetail({ member, transactions, accessLogs, onClose, onRenew }) {
+  if (!member) {
+    return (
+      <Card
+        style={{
+          borderRadius: 24,
+          minHeight: 360,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+        }}
+      >
+        <div>
+          <div
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: 18,
+              background: "rgba(205,76,126,0.10)",
+              color: COLORS.accent,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 26,
+              fontWeight: 800,
+              margin: "0 auto 18px",
+            }}
+          >
+            i
+          </div>
+          <div
+            style={{
+              fontSize: 16,
+              fontWeight: 700,
+              color: COLORS.text,
+              marginBottom: 8,
+            }}
+          >
+            Pilih Anggota
+          </div>
+          <div
+            style={{
+              color: COLORS.textSec,
+              fontSize: 14,
+              lineHeight: 1.7,
+              maxWidth: 280,
+            }}
+          >
+            Klik tombol Detail pada salah satu anggota untuk melihat profil dan aktivitasnya.
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  const totalPaid = transactions
+    .filter((transaction) => transaction.status === "Sukses")
+    .reduce((total, transaction) => total + transaction.amount, 0);
+
+  const latestTransaction = transactions[0];
+
+  return (
+    <Card style={{ borderRadius: 24, padding: 28 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          gap: 16,
+          alignItems: "flex-start",
+          marginBottom: 24,
+        }}
+      >
+        <div style={{ display: "flex", gap: 16, alignItems: "center", minWidth: 0 }}>
+          <div
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: 20,
+              background: "rgba(205,76,126,0.12)",
+              color: COLORS.accent,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 17,
+              fontWeight: 800,
+              flexShrink: 0,
+            }}
+          >
+            {member.avatar}
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <div
+              style={{
+                fontSize: 22,
+                fontWeight: 800,
+                color: COLORS.text,
+                lineHeight: 1.2,
+                marginBottom: 8,
+              }}
+            >
+              {member.name}
+            </div>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+              <Badge color={STATUS_COLOR[member.status]}>{member.status}</Badge>
+              <span style={{ color: COLORS.textSec, fontSize: 13, fontWeight: 700 }}>
+                {member.id}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <button
+          onClick={onClose}
+          aria-label="Tutup detail anggota"
+          style={{
+            width: 38,
+            height: 38,
+            borderRadius: 12,
+            border: `1px solid ${COLORS.border}`,
+            background: "#FFFFFF",
+            color: COLORS.textSec,
+            cursor: "pointer",
+            fontSize: 20,
+            lineHeight: 1,
+            flexShrink: 0,
+          }}
+        >
+          x
+        </button>
+      </div>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+          gap: 12,
+          marginBottom: 26,
+        }}
+      >
+        <InfoItem label="Paket" value={member.plan} />
+        <InfoItem label="Masa Berlaku" value={member.expiry} />
+        <InfoItem label="Email" value={member.email} />
+        <InfoItem label="No. HP" value={member.phone} />
+        <InfoItem label="Alamat" value={member.address} />
+        <InfoItem label="Total Bayar" value={`Rp ${totalPaid.toLocaleString("id-ID")}`} />
+      </div>
+
+      {member.status !== "Aktif" && (
+        <button
+          onClick={() => onRenew(member.id)}
+          style={{
+            width: "100%",
+            background: COLORS.accent,
+            color: "#FFFFFF",
+            border: "none",
+            padding: "13px 18px",
+            borderRadius: 16,
+            fontWeight: 800,
+            cursor: "pointer",
+            fontSize: 13,
+            marginBottom: 26,
+            boxShadow: "0 10px 24px rgba(205,76,126,0.22)",
+          }}
+        >
+          Perpanjang Keanggotaan
+        </button>
+      )}
+
+      <div style={{ marginBottom: 26 }}>
+        <SectionTitle>Pembayaran Terakhir</SectionTitle>
+        {latestTransaction ? (
+          <div
+            style={{
+              border: `1px solid ${COLORS.border}`,
+              borderRadius: 16,
+              padding: 16,
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 14,
+              alignItems: "center",
+            }}
+          >
+            <div>
+              <div style={{ fontWeight: 800, color: COLORS.text, marginBottom: 6 }}>
+                {latestTransaction.id}
+              </div>
+              <div style={{ fontSize: 13, color: COLORS.textSec }}>
+                {latestTransaction.method} - {latestTransaction.date}
+              </div>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontWeight: 800, color: COLORS.accent, marginBottom: 6 }}>
+                Rp {latestTransaction.amount.toLocaleString("id-ID")}
+              </div>
+              <Badge color={latestTransaction.status === "Sukses" ? "green" : "orange"}>
+                {latestTransaction.status}
+              </Badge>
+            </div>
+          </div>
+        ) : (
+          <div style={{ color: COLORS.textSec, fontSize: 14 }}>
+            Belum ada transaksi untuk anggota ini.
+          </div>
+        )}
+      </div>
+
+      <div>
+        <SectionTitle>Riwayat Akses</SectionTitle>
+        {accessLogs.length ? (
+          accessLogs.slice(0, 4).map((log, index) => (
+            <div
+              key={log.id || index}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                padding: "12px 0",
+                borderBottom:
+                  index < Math.min(accessLogs.length, 4) - 1
+                    ? `1px solid ${COLORS.border}`
+                    : "none",
+              }}
+            >
+              <span style={{ minWidth: 48, fontSize: 12, color: COLORS.textSec, fontWeight: 700 }}>
+                {log.time}
+              </span>
+              <span style={{ flex: 1, fontSize: 13, color: COLORS.textSec }}>
+                {log.method}
+              </span>
+              <Badge color={log.status === "Masuk" ? "green" : "red"}>{log.status}</Badge>
+            </div>
+          ))
+        ) : (
+          <div style={{ color: COLORS.textSec, fontSize: 14 }}>
+            Belum ada riwayat akses.
+          </div>
+        )}
+      </div>
+    </Card>
+  );
+}
+
 /* ============================================================
    MEMBER CARD
 ============================================================ */
-function MemberCard({ m, onRenew }) {
+function MemberCard({ m, selected, onDetail, onRenew }) {
   return (
     <div
       style={{
         background: COLORS.card,
 
-        border: `1px solid ${COLORS.border}`,
+        border: `1px solid ${selected ? COLORS.accent : COLORS.border}`,
 
         borderRadius: 24,
 
@@ -45,7 +325,9 @@ function MemberCard({ m, onRenew }) {
         transition: "0.2s ease",
 
         boxShadow:
-          "0 6px 24px rgba(0,0,0,0.03)",
+          selected
+            ? "0 10px 28px rgba(205,76,126,0.16)"
+            : "0 6px 24px rgba(0,0,0,0.03)",
       }}
     >
       {/* ============================================================
@@ -138,6 +420,29 @@ function MemberCard({ m, onRenew }) {
       {/* ============================================================
           BUTTON
       ============================================================ */}
+      <button
+        onClick={() => onDetail(m.id)}
+        style={{
+          background: selected ? COLORS.accent : "#F4F6F8",
+
+          color: selected ? "#FFFFFF" : COLORS.textSec,
+
+          border: "none",
+
+          padding: "12px 18px",
+
+          borderRadius: 16,
+
+          fontWeight: 700,
+
+          cursor: "pointer",
+
+          fontSize: 13,
+        }}
+      >
+        Detail
+      </button>
+
       {m.status !== "Aktif" && (
         <button
           onClick={() => onRenew(m.id)}
@@ -177,8 +482,20 @@ export default function Keanggotaan({
   actions,
 }) {
   const [search, setSearch] = useState("");
+  const [selectedMemberId, setSelectedMemberId] = useState("");
 
   const members = database.members;
+  const selectedMember = members.find((member) => member.id === selectedMemberId);
+  const selectedTransactions = selectedMember
+    ? database.transactions.filter(
+        (transaction) =>
+          transaction.memberId === selectedMember.id ||
+          transaction.member === selectedMember.name
+      )
+    : [];
+  const selectedAccessLogs = selectedMember
+    ? database.accessLogs.filter((log) => log.name === selectedMember.name)
+    : [];
 
   /* ============================================================
      FILTER SEARCH
@@ -353,40 +670,62 @@ export default function Keanggotaan({
           MEMBER LIST
       ============================================================ */}
       <div
+        className="member-detail-layout"
         style={{
           display: "grid",
-          gap: 16,
+          gridTemplateColumns: "minmax(0, 1.25fr) minmax(320px, 0.85fr)",
+          gap: 22,
+          alignItems: "start",
         }}
       >
-        {filtered.length === 0 ? (
-          <div
-            style={{
-              background: COLORS.card,
+        <div
+          style={{
+            display: "grid",
+            gap: 16,
+          }}
+        >
+          {filtered.length === 0 ? (
+            <div
+              style={{
+                background: COLORS.card,
 
-              border: `1px solid ${COLORS.border}`,
+                border: `1px solid ${COLORS.border}`,
 
-              borderRadius: 24,
+                borderRadius: 24,
 
-              padding: 50,
+                padding: 50,
 
-              textAlign: "center",
+                textAlign: "center",
 
-              color: COLORS.textSec,
+                color: COLORS.textSec,
 
-              fontSize: 14,
-            }}
-          >
-            Tidak ada anggota ditemukan.
-          </div>
-        ) : (
-          filtered.map((m) => (
-            <MemberCard
-              key={m.id}
-              m={m}
-              onRenew={renewMember}
-            />
-          ))
-        )}
+                fontSize: 14,
+              }}
+            >
+              Tidak ada anggota ditemukan.
+            </div>
+          ) : (
+            filtered.map((m) => (
+              <MemberCard
+                key={m.id}
+                m={m}
+                selected={selectedMemberId === m.id}
+                onDetail={setSelectedMemberId}
+                onRenew={renewMember}
+              />
+            ))
+          )}
+        </div>
+
+        <div className="member-detail-panel" style={{ position: "sticky", top: 24 }}>
+          <MemberDetail
+            member={selectedMember}
+            transactions={selectedTransactions}
+            accessLogs={selectedAccessLogs}
+            onClose={() => setSelectedMemberId("")}
+            onRenew={renewMember}
+          />
+        </div>
       </div>
     </div>
   );

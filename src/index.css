@@ -483,6 +483,14 @@ button:hover {
 ========================================================= */
 
 @media (max-width: 900px) {
+  .member-detail-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .member-detail-panel {
+    position: static !important;
+  }
+
   .sidebar {
     width: 100%;
     height: auto;
