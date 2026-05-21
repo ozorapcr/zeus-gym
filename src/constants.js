@@ -144,6 +144,7 @@ export const NAV_ITEMS = [
   "Laporan",
   "Promosi",
   "Feedback",
+  "Components",
 ];
 
 /* ============================================================

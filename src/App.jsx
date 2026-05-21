@@ -11,6 +11,8 @@ import Akses from "./pages/Akses";
 import Laporan from "./pages/Laporan";
 import Promosi from "./pages/Promosi";
 import Feedback from "./pages/Feedback";
+import Components from "./pages/Components";
+
 
 const PAGES = {
   Dashboard,
@@ -21,9 +23,14 @@ const PAGES = {
   Laporan,
   Promosi,
   Feedback,
+  Components,
 };
 
 const CUSTOMER_DETAIL_ROUTE = /^\/customers\/([^/]+)\/?$/i;
+
+const PATH_ROUTES = {
+  "/components": "Components",
+};
 
 function readRoute() {
   if (typeof window === "undefined") {
@@ -36,6 +43,11 @@ function readRoute() {
       active: "Keanggotaan",
       memberId: decodeURIComponent(match[1]).toUpperCase(),
     };
+  }
+
+  const page = PATH_ROUTES[window.location.pathname.toLowerCase()];
+  if (page) {
+    return { active: page, memberId: "" };
   }
 
   return { active: "Dashboard", memberId: "" };
@@ -129,7 +141,7 @@ export default function App() {
   }
 
   const navigatePage = (page) => {
-    pushPath("/");
+    pushPath(page === "Components" ? "/components" : "/");
     setRoute({ active: page, memberId: "" });
   };
 
