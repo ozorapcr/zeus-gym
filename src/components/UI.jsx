@@ -1,6 +1,7 @@
 // ============================================================
 //  components/UI.jsx  —  Reusable shared UI primitives
 // ============================================================
+import { cloneElement } from "react";
 import { COLORS } from "../constants";
 
 /* ── Badge ──────────────────────────────────────────────── */
@@ -114,6 +115,166 @@ export function Textarea({ label, rows = 3, ...props }) {
 }
 
 /* ── PrimaryButton ───────────────────────────────────────── */
+export function SelectField({ label, options = [], ...props }) {
+  return (
+    <div style={{ marginBottom: 16 }}>
+      {label && (
+        <label style={{
+          display: "block", fontSize: 12,
+          color: COLORS.textSec, marginBottom: 6, letterSpacing: 0.5,
+        }}>
+          {label}
+        </label>
+      )}
+      <select
+        {...props}
+        style={{
+          width: "100%",
+          background: COLORS.dark,
+          border: `1px solid ${COLORS.border}`,
+          borderRadius: 8,
+          padding: "10px 36px 10px 14px",
+          color: COLORS.text,
+          fontSize: 14,
+          outline: "none",
+          boxSizing: "border-box",
+          cursor: "pointer",
+          ...props.style,
+        }}
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+export function Tabs({ tabs = [], value, onValueChange }) {
+  const activeTab = tabs.find((tab) => tab.value === value) ?? tabs[0];
+
+  return (
+    <div>
+      <div style={{
+        display: "flex",
+        gap: 6,
+        flexWrap: "wrap",
+        background: COLORS.dark,
+        border: `1px solid ${COLORS.border}`,
+        borderRadius: 8,
+        padding: 4,
+        marginBottom: 18,
+      }}>
+        {tabs.map((tab) => {
+          const active = tab.value === activeTab?.value;
+          return (
+            <button
+              key={tab.value}
+              type="button"
+              onClick={() => onValueChange?.(tab.value)}
+              style={{
+                border: `1px solid ${active ? "rgba(232, 255, 0, 0.3)" : "transparent"}`,
+                background: active ? "#1a1f00" : "transparent",
+                color: active ? COLORS.accent : COLORS.textSec,
+                borderRadius: 6,
+                padding: "9px 14px",
+                cursor: "pointer",
+                fontSize: 13,
+                fontWeight: 800,
+              }}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {activeTab?.content}
+    </div>
+  );
+}
+
+export function Dialog({ open, onOpenChange, trigger, title, description, children }) {
+  const close = () => onOpenChange?.(false);
+  const openDialog = () => onOpenChange?.(true);
+
+  return (
+    <>
+      {trigger && cloneElement(trigger, { onClick: openDialog })}
+      {open && (
+        <div
+          role="presentation"
+          onClick={close}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 50,
+            background: "rgba(0, 0, 0, 0.72)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 18,
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={title}
+            onClick={(event) => event.stopPropagation()}
+            style={{
+              width: "min(460px, 100%)",
+              background: COLORS.card,
+              border: `1px solid ${COLORS.border}`,
+              borderRadius: 8,
+              padding: 24,
+              boxShadow: "0 24px 60px rgba(0, 0, 0, 0.45)",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", gap: 16 }}>
+              <div>
+                <h3 style={{ margin: 0, color: COLORS.text, fontSize: 20 }}>
+                  {title}
+                </h3>
+                {description && (
+                  <p style={{
+                    margin: "6px 0 0",
+                    color: COLORS.textSec,
+                    fontSize: 13,
+                    lineHeight: 1.5,
+                  }}>
+                    {description}
+                  </p>
+                )}
+              </div>
+              <button
+                type="button"
+                aria-label="Tutup dialog"
+                onClick={close}
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: 6,
+                  border: `1px solid ${COLORS.border}`,
+                  background: COLORS.dark,
+                  color: COLORS.text,
+                  cursor: "pointer",
+                  fontSize: 18,
+                  lineHeight: 1,
+                }}
+              >
+                x
+              </button>
+            </div>
+            <div style={{ marginTop: 20 }}>{children}</div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 export function PrimaryButton({ children, style, ...props }) {
   return (
     <button
