@@ -50,7 +50,7 @@ export default function Dashboard({ database }) {
     })),
     ...members.slice(-2).map((member) => ({
       time: member.expiry,
-      event: `Anggota terdaftar: ${member.name}`,
+      event: `Anggota baru terdaftar: ${member.name}`,
       type: "Keanggotaan",
       detail: `${member.name} memakai paket ${member.plan} dengan status ${member.status}.`,
     })),
@@ -62,17 +62,24 @@ export default function Dashboard({ database }) {
       content: (
         <div>
           <SectionTitle>Kunjungan Mingguan</SectionTitle>
-          <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 120 }}>
+          <div style={{ display: "flex", alignItems: "flex-end", gap: 14, height: 240, marginTop: 12 }}>
             {periodBars.map((height, index) => (
-              <div key={DAYS[index]} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+              <div key={DAYS[index]} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", gap: 10 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: index === 6 ? COLORS.accent : COLORS.textSec }}>
+                  {height}
+                </span>
                 <div style={{
                   width: "100%",
-                  background: index === 6 ? COLORS.accent : "#333",
-                  borderRadius: "4px 4px 0 0",
+                  borderRadius: 16,
+                  background: index === 6
+                    ? `linear-gradient(to top, ${COLORS.accent}, #e07ba3)`
+                    : "#E9EDF2",
                   height: `${height}%`,
-                  transition: "height 0.3s",
+                  minHeight: 30,
+                  transition: "0.3s ease",
+                  boxShadow: index === 6 ? "0 10px 24px rgba(205,76,126,0.25)" : "none",
                 }} />
-                <span style={{ fontSize: 10, color: COLORS.textSec }}>{DAYS[index]}</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: COLORS.textSec }}>{DAYS[index]}</span>
               </div>
             ))}
           </div>
@@ -87,18 +94,21 @@ export default function Dashboard({ database }) {
           <SectionTitle>Distribusi Paket</SectionTitle>
           {[
             ["VIP", COLORS.accent],
-            ["Premium", "#ff8800"],
-            ["Basic", "#666"],
+            ["Premium", COLORS.orange],
+            ["Basic", "#AAB2C0"],
           ].map(([label, color]) => {
             const pct = members.length ? Math.round(((planCounts[label] || 0) / members.length) * 100) : 0;
             return (
-              <div key={label} style={{ marginBottom: 14 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                  <span style={{ fontSize: 12, color: COLORS.textSec }}>{label}</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: COLORS.text }}>{pct}%</span>
+              <div key={label} style={{ marginBottom: 22 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: 999, background: color }} />
+                    <span style={{ fontSize: 14, fontWeight: 600, color: COLORS.text }}>{label}</span>
+                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: COLORS.textSec }}>{pct}%</span>
                 </div>
-                <div style={{ background: "#333", borderRadius: 4, height: 6 }}>
-                  <div style={{ width: `${pct}%`, background: color, borderRadius: 4, height: "100%" }} />
+                <div style={{ background: "#EEF2F6", borderRadius: 999, height: 10, overflow: "hidden" }}>
+                  <div style={{ width: `${pct}%`, background: color, borderRadius: 999, height: "100%", transition: "0.3s ease" }} />
                 </div>
               </div>
             );
@@ -127,75 +137,87 @@ export default function Dashboard({ database }) {
           value={period}
           onChange={(event) => setPeriod(event.target.value)}
           options={PERIOD_OPTIONS}
-          style={{ marginBottom: 0 }}
         />
-        <div style={{ color: COLORS.textSec, fontSize: 13, lineHeight: 1.6 }}>
+        <div style={{ color: COLORS.textSec, fontSize: 13, lineHeight: 1.6, paddingBottom: 18 }}>
           Data dashboard disesuaikan untuk periode terpilih agar admin bisa membandingkan tren operasional dengan cepat.
         </div>
       </Card>
 
       <div style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(180px,1fr))",
-        gap: 16, marginBottom: 32,
+        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+        gap: 20,
+        marginBottom: 30,
       }}>
         <StatCard label="Total Anggota" value={members.length} sub="tersimpan di database" accent />
         <StatCard label="Anggota Aktif" value={activeMembers} sub={`dari ${members.length} anggota`} />
         <StatCard label="Pendapatan" value={`Rp ${(monthlyRevenue / 1000000).toFixed(1)}jt`} sub="transaksi sukses" />
-        <StatCard label="Perlu Tindak Lanjut" value={expiringMembers} sub="hampir habis/kadaluarsa" />
+        <StatCard label="Perlu Tindak Lanjut" value={expiringMembers} sub="hampir habis / kadaluarsa" />
       </div>
 
-      <Card style={{ marginBottom: 24 }}>
+      <Card style={{ borderRadius: 24, marginBottom: 24 }}>
         <Tabs tabs={analyticTabs} value={activeTab} onValueChange={setActiveTab} />
       </Card>
 
-      <Card>
+      <Card style={{ borderRadius: 24 }}>
         <SectionTitle>Aktivitas Terbaru</SectionTitle>
-        {recentActivity.map((activity, index) => (
-          <div key={`${activity.type}-${activity.time}-${index}`} style={{
-            display: "flex", gap: 16,
-            padding: "10px 0",
-            alignItems: "center",
-            borderBottom: index < recentActivity.length - 1
-              ? `1px solid ${COLORS.border}` : "none",
-          }}>
-            <span style={{ fontSize: 12, color: COLORS.textSec, minWidth: 75, fontFamily: "monospace" }}>
-              {activity.time}
-            </span>
-            <span style={{ fontSize: 13, color: COLORS.text }}>{activity.event}</span>
-            <Dialog
-              open={selectedActivity === index}
-              onOpenChange={(open) => setSelectedActivity(open ? index : null)}
-              title={activity.type}
-              description={activity.time}
-              trigger={(
-                <button
-                  type="button"
-                  style={{
-                    marginLeft: "auto",
-                    background: COLORS.dark,
-                    color: COLORS.accent,
-                    border: `1px solid ${COLORS.border}`,
-                    borderRadius: 6,
-                    padding: "6px 10px",
-                    cursor: "pointer",
-                    fontSize: 12,
-                    fontWeight: 800,
-                  }}
-                >
-                  Detail
-                </button>
-              )}
-            >
-              <div style={{ color: COLORS.text, fontSize: 14, lineHeight: 1.6 }}>
+        <div style={{ marginTop: 10 }}>
+          {recentActivity.map((activity, index) => (
+            <div key={`${activity.type}-${activity.time}-${index}`} style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 18,
+              padding: "16px 0",
+              borderBottom: index < recentActivity.length - 1 ? `1px solid ${COLORS.border}` : "none",
+            }}>
+              <div style={{
+                width: 12,
+                height: 12,
+                borderRadius: 999,
+                background: COLORS.accent,
+                boxShadow: "0 0 0 6px rgba(205,76,126,0.10)",
+                flexShrink: 0,
+              }} />
+              <span style={{ fontSize: 12, fontWeight: 600, color: COLORS.textSec, minWidth: 70 }}>
+                {activity.time}
+              </span>
+              <span style={{ fontSize: 14, color: COLORS.text, lineHeight: 1.6 }}>
                 {activity.event}
-              </div>
-              <div style={{ color: COLORS.textSec, fontSize: 13, lineHeight: 1.6, marginTop: 10 }}>
-                {activity.detail}
-              </div>
-            </Dialog>
-          </div>
-        ))}
+              </span>
+              <Dialog
+                open={selectedActivity === index}
+                onOpenChange={(open) => setSelectedActivity(open ? index : null)}
+                title={activity.type}
+                description={activity.time}
+                trigger={(
+                  <button
+                    type="button"
+                    style={{
+                      marginLeft: "auto",
+                      background: "rgba(255,255,255,0.03)",
+                      color: COLORS.accent,
+                      border: `1px solid ${COLORS.border}`,
+                      borderRadius: 12,
+                      padding: "8px 12px",
+                      cursor: "pointer",
+                      fontSize: 12,
+                      fontWeight: 800,
+                    }}
+                  >
+                    Detail
+                  </button>
+                )}
+              >
+                <div style={{ color: COLORS.text, fontSize: 14, lineHeight: 1.6 }}>
+                  {activity.event}
+                </div>
+                <div style={{ color: COLORS.textSec, fontSize: 13, lineHeight: 1.6, marginTop: 10 }}>
+                  {activity.detail}
+                </div>
+              </Dialog>
+            </div>
+          ))}
+        </div>
       </Card>
     </div>
   );
