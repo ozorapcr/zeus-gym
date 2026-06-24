@@ -1,6 +1,7 @@
+// src/App.jsx
 import { useEffect, useMemo, useState } from "react";
 import { COLORS } from "./constants";
-import { getSession, loadDatabase, login, logout, saveDatabase } from "./dataStore";
+import { loadDatabase, saveDatabase } from "./dataStore";
 import Sidebar from "./components/Sidebar";
 import { Input, PrimaryButton } from "./components/UI";
 import Dashboard from "./pages/Dashboard";
@@ -13,6 +14,7 @@ import Promosi from "./pages/Promosi";
 import Feedback from "./pages/Feedback";
 import Components from "./pages/Components";
 
+import authAPI from "./services/authAPI";  // ← PERUBAHAN: tanpa {}
 
 const PAGES = {
   Dashboard,
@@ -59,67 +61,138 @@ function pushPath(path) {
 }
 
 function LoginScreen({ onLogin }) {
-  const [form, setForm] = useState({ email: "admin@gymzeus.local", password: "admin123" });
+  const [form, setForm] = useState({ 
+    email: "admin@gymzeus.local", 
+    password: "admin123" 
+  });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault();
-    const result = login(form.email.trim(), form.password);
-    if (!result.ok) {
-      setError(result.message);
+    
+    if (!form.email || !form.password) {
+      setError("Email dan password wajib diisi!");
       return;
     }
-    onLogin(result.session);
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const { user, session } = await authAPI.login(
+        form.email.trim(),
+        form.password
+      );
+
+      localStorage.setItem('sb-session', JSON.stringify(session));
+      onLogin(session);
+
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(err.message || "Email atau password salah!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <main className="login-shell">
-      <section className="login-panel">
-        <div className="brand-lockup">
-          <div className="brand-mark">G</div>
-          <div>
-            <div className="brand-title">GYM<span>ZEUS</span></div>
-            <div className="brand-subtitle">MANAGEMENT SYSTEM</div>
+    <div style={{
+      display: "flex",
+      minHeight: "100vh",
+      alignItems: "center",
+      justifyContent: "center",
+      background: "#0A0B0D",
+    }}>
+      <div style={{
+        background: "#121317",
+        padding: 48,
+        borderRadius: 24,
+        maxWidth: 420,
+        width: "100%",
+        border: "1px solid #2A2D35",
+      }}>
+        <div style={{ marginBottom: 32 }}>
+          <div style={{
+            fontSize: 32,
+            fontWeight: 800,
+            color: "#FFFFFF",
+          }}>
+            GYM<span style={{ color: "#CD4C7E" }}>ZEUS</span>
+          </div>
+          <div style={{
+            fontSize: 13,
+            color: "#6B7280",
+            marginTop: 4,
+          }}>
+            MANAGEMENT SYSTEM
           </div>
         </div>
 
-        <div className="login-copy">
-          <h1>Masuk Admin</h1>
-          <p>Kelola anggota, pembayaran, akses, dan laporan dari satu dashboard.</p>
-        </div>
+        <h2 style={{ color: "#FFFFFF", marginBottom: 8 }}>Masuk Admin</h2>
+        <p style={{ color: "#6B7280", fontSize: 14, marginBottom: 24 }}>
+          Kelola anggota, pembayaran, akses, dan laporan dari satu dashboard.
+        </p>
 
-        <form onSubmit={submit} className="login-form">
+        {error && (
+          <div style={{
+            background: "rgba(239,68,68,0.12)",
+            color: "#EF4444",
+            padding: "10px 14px",
+            borderRadius: 10,
+            fontSize: 13,
+            marginBottom: 16,
+          }}>
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={submit}>
           <Input
             label="Email"
             type="email"
             value={form.email}
-            onChange={(e) => setForm((value) => ({ ...value, email: e.target.value }))}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            disabled={loading}
           />
           <Input
             label="Password"
             type="password"
             value={form.password}
-            onChange={(e) => setForm((value) => ({ ...value, password: e.target.value }))}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            disabled={loading}
           />
-          {error && <div className="form-error">{error}</div>}
-          <PrimaryButton type="submit" style={{ width: "100%" }}>Masuk</PrimaryButton>
+          
+          <PrimaryButton 
+            type="submit" 
+            style={{ width: "100%" }}
+            disabled={loading}
+          >
+            {loading ? "Memproses..." : "Masuk"}
+          </PrimaryButton>
         </form>
-      </section>
-
-      <section className="login-aside">
-       
-        
-      </section>
-    </main>
+      </div>
+    </div>
   );
 }
 
 export default function App() {
   const [route, setRoute] = useState(() => readRoute());
-  const [session, setSession] = useState(() => getSession());
+  const [session, setSession] = useState(() => {
+    const savedSession = localStorage.getItem('sb-session');
+    if (savedSession) {
+      try {
+        return JSON.parse(savedSession);
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [database, setDatabase] = useState(() => loadDatabase());
 
   const PageComponent = PAGES[route.active];
+  
   const dbActions = useMemo(() => ({
     updateDatabase(updater) {
       setDatabase((current) => {
@@ -156,11 +229,34 @@ export default function App() {
     setRoute({ active: "Keanggotaan", memberId: "" });
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    try {
+      await authAPI.logout();
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+    localStorage.removeItem('sb-session');
     setSession(null);
     navigatePage("Dashboard");
   };
+
+  if (!PageComponent) {
+    return (
+      <div style={{ 
+        display: "flex", 
+        alignItems: "center", 
+        justifyContent: "center",
+        minHeight: "100vh",
+        color: "#FFFFFF",
+        background: "#0A0B0D",
+      }}>
+        <div>
+          <h2>Halaman tidak ditemukan</h2>
+          <p style={{ color: "#6B7280" }}>Page: {route.active}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{
@@ -169,16 +265,31 @@ export default function App() {
       background: COLORS.black,
       color: COLORS.text,
     }}>
-      <Sidebar active={route.active} setActive={navigatePage} session={session} onLogout={handleLogout} />
+      <Sidebar 
+        active={route.active} 
+        setActive={navigatePage} 
+        session={session} 
+        onLogout={handleLogout} 
+      />
 
-      <main className="app-main">
-        <div className="page-container">
+      <main style={{
+        flex: 1,
+        padding: 32,
+        background: "#0A0B0D",
+        overflowY: "auto",
+        minHeight: "100vh",
+      }}>
+        <div style={{
+          maxWidth: 1440,
+          margin: "0 auto",
+        }}>
           <PageComponent
             database={database}
             actions={dbActions}
             detailMemberId={route.memberId}
             onOpenMemberDetail={openMemberDetail}
             onCloseMemberDetail={closeMemberDetail}
+            session={session}
           />
         </div>
       </main>
